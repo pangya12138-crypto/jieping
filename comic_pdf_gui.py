@@ -174,7 +174,7 @@ class ComicPDFApp(tk.Tk):
 
         try:
             with sync_playwright() as p:
-              browser = p.chromium.launch(
+                browser = p.chromium.launch(
                     channel="msedge",
                     headless=False,
                     args=["--start-maximized"],
