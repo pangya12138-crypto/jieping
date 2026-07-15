@@ -22,16 +22,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pyinstaller playwright pillow
 
-      - name: Install bundled Chromium
-        shell: pwsh
-        run: |
-          $env:PLAYWRIGHT_BROWSERS_PATH = "$pwd\pw-browsers"
-          python -m playwright install chromium
-
       - name: Build EXE
         shell: pwsh
         run: |
-          $env:PLAYWRIGHT_BROWSERS_PATH = "$pwd\pw-browsers"
           python -m PyInstaller `
             --noconfirm `
             --clean `
@@ -40,25 +33,13 @@ jobs:
             --name ComicPDF `
             --collect-all playwright `
             --collect-all PIL `
-            --add-data "pw-browsers;pw-browsers" `
             comic_pdf_gui.py
 
-      - name: Create portable package
+      - name: Package
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path portable | Out-Null
           Copy-Item dist\ComicPDF.exe portable\ComicPDF.exe
-          @"
-          ComicPDF portable edition
-
-          1. Run ComicPDF.exe
-          2. Enter the reader URL
-          3. Log in manually
-          4. Open the first comic page
-          5. Click the start button
-
-          No Python installation is required.
-          "@ | Set-Content -Encoding UTF8 portable\README.txt
           Compress-Archive -Path portable\* -DestinationPath ComicPDF-portable.zip
 
       - name: Upload artifact
